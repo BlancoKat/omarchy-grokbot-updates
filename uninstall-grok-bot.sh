@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Remove a grok-bot-arch install. Does not touch ks-grok-bot (the KVM guest).
+# Remove a Grok Bot install made by update-grok-bot.sh.
 #
 set -euo pipefail
 

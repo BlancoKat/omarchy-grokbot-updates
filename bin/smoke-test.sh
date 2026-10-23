@@ -27,7 +27,10 @@ count="$(grep -c 'omarchy-grok-bot-update begin' "$EXT" || true)"
 [[ "$count" == "1" ]]
 
 "$ROOT/uninstall-menu.sh" >/dev/null
-! grep -q 'update.grok-bot' "$EXT"
+if grep -q 'update.grok-bot' "$EXT"; then
+  echo "leftover update.grok-bot menu entry in $EXT" >&2
+  exit 1
+fi
 grep -q '"personal"' "$EXT"
 [[ ! -e "$XDG_DATA_HOME/omarchy-grok-bot" ]]
 

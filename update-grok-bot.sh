@@ -139,8 +139,8 @@ fi
 ok "InRelease signature OK"
 
 PKG_PATH="main/binary-$ARCH/Packages"
-read -r PKG_SHA PKG_SIZE < <(
-  awk -v p="$PKG_PATH" '$3==p && length($1)==64 {print $1, $2; exit}' "$TMP/Release"
+read -r PKG_SHA < <(
+  awk -v p="$PKG_PATH" '$3==p && length($1)==64 {print $1; exit}' "$TMP/Release"
 ) || true
 [[ -n "${PKG_SHA:-}" ]] || die "$PKG_PATH not found in signed Release."
 
