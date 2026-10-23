@@ -1,0 +1,9 @@
+*.deb
+*.tar.xz
+*.tar.gz
+control.tar.xz
+data.tar.xz
+debian-binary
+.extract/
+/tmp/
+*.log

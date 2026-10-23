@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#
+# omarchy:summary=Update Grok Bot from Cursor's signed apt repository
+# omarchy:requires-sudo=true
+#
+# Wired into Omarchy menu as Update > Grok Bot.
+# Prefer this over waiting on the Omarchy package mirror when a newer
+# official Cursor build has already shipped.
+#
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+UPDATER="${OMARCHY_GROK_BOT_UPDATER:-$ROOT/update-grok-bot.sh}"
+
+if [[ ! -x "$UPDATER" ]]; then
+  # Installed layout: scripts live beside this binary under share/, or PATH.
+  for candidate in \
+    "${XDG_DATA_HOME:-$HOME/.local/share}/omarchy-grok-bot/update-grok-bot.sh" \
+    "$HOME/.local/share/omarchy-grok-bot/update-grok-bot.sh" \
+    "$(command -v update-grok-bot.sh 2>/dev/null || true)"
+  do
+    if [[ -n "$candidate" && -x "$candidate" ]]; then
+      UPDATER="$candidate"
+      break
+    fi
+  done
+fi
+
+if [[ ! -x "$UPDATER" ]]; then
+  echo "Could not find update-grok-bot.sh." >&2
+  echo "Re-run install.sh from the omarchy-grok-bot-update repo." >&2
+  exit 1
+fi
+
+# If Omarchy's pacman package is installed, migrate to the official Cursor
+# tree under /opt so this Update entry can keep it current. The pacman
+# package lags the Cursor apt channel and cannot be upgraded from here
+# without bypassing Omarchy's system-upgrade guard.
+if command -v pacman >/dev/null 2>&1 && pacman -Q grok-bot &>/dev/null; then
+  echo -e "\e[33mOmarchy pacman package 'grok-bot' is installed.\e[0m"
+  echo "Migrating to Cursor's signed release under /opt/Grok Bot so"
+  echo "Update > Grok Bot can track new builds directly."
+  echo ""
+  if command -v omarchy-pkg-drop >/dev/null 2>&1; then
+    omarchy-pkg-drop grok-bot || true
+  else
+    sudo pacman -Rns --noconfirm grok-bot || true
+  fi
+  echo ""
+fi
+
+exec "$UPDATER" "$@"

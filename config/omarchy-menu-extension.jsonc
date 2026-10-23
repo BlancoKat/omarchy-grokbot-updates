@@ -1,0 +1,14 @@
+{
+  // Grok Bot → Omarchy Update menu
+  // Installed by: install.sh from this repo
+  // Appears under Update when Grok Bot is present (pacman package or /opt install).
+
+  "update.grok-bot": {
+    "icon": "",
+    "iconFont": "omarchy",
+    "label": "Grok Bot",
+    "description": "Update Grok Bot from Cursor's signed releases",
+    "when": "omarchy-pkg-present grok-bot || [[ -x '/opt/Grok Bot/grok-bot' ]] || command -v grok-bot >/dev/null",
+    "action": "omarchy-launch-floating-terminal-with-presentation omarchy-update-grok-bot"
+  }
+}
